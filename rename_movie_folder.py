@@ -5,9 +5,9 @@ import sys
 import re
 
 string = sys.argv[1]
+warningText = ""
 print("Before:-")
 print(string)
-
 
 # Find resolution
 resolution = 0
@@ -16,15 +16,17 @@ for pixel in ["2160p", "1080p", "720p"]:
       resolution = pixel
       string = string[:string.find(pixel)]
 
-
-
 # Find year
 year = re.findall(r'\b(1[0-9]{3}|2[0-9]{3})\b', string)
-year = year[-1]
+if year == []:
+   warningText = "missing year"
+else:
+   year = year[-1]
 
 # Find title
-match = re.search(re.escape(year), string)
-string = string[:match.start()]
+if year != []:
+   match = re.search(re.escape(year), string)
+   string = string[:match.start()]
 index = -1
 found_index = 1
 for char in reversed(string):
@@ -38,11 +40,15 @@ string = string.replace("."," ")
 
 #Append year & resolution
 print(f"year:{year} resolution:{resolution}")
-string += f" ({year}) [{resolution}]"
+if year != []:
+   string += f" ({year})"
+string += f" [{resolution}]"
 
 print('After:-')
 print(string)
 
 os.rename(sys.argv[1],string)
 print("Done.")
+if warningText != "":
+   print(f"WARNING: {warningText}")
 
